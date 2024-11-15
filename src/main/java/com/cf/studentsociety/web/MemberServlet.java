@@ -44,7 +44,7 @@ public class MemberServlet extends RouteServlet{
         Integer stuId = Integer.valueOf(stuIdStr);
         Integer assId = Integer.valueOf(assIdStr);
         Member member = new Member();
-        member.setMember_societyId(String.valueOf(assId));
+//        member.setMember_societyId(assId);
         member.setMemberStudentId(stuId);
         member.setJoinDate(new Date());
 

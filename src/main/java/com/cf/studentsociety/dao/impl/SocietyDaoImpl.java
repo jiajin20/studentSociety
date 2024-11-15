@@ -43,7 +43,7 @@ public class SocietyDaoImpl extends BaseDao implements SocietyDao {
 
     @Override
     public Society queryByStudentNumber(String number) throws SQLException {
-        String sql = "select a.* from society a,student,member where studentNumber = ? and student.studentId = member.memberStudentId and member.member_societyId = a.society";
+        String sql = "select a.* from society a,student,member where studentNumber = ? and student.studentId = member.memberStudentId and member.member_societyId = a.societyId";
         QueryRunner qr = new QueryRunner(getDataSource());
         return qr.query(sql,new BeanHandler<Society>(Society.class), number);
     }
