@@ -8,4 +8,5 @@ public interface SocietyDao {
     Integer insertSociety(Society society) throws SQLException;
     List<Society> getAllSociety() throws SQLException;
     Integer updateSociety(Society society) throws SQLException;
+    Society queryByStudentNumber(String number) throws SQLException;
 }

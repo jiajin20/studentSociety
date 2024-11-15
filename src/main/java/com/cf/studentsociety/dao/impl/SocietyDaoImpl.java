@@ -4,6 +4,7 @@ import com.cf.studentsociety.dao.BaseDao;
 import com.cf.studentsociety.dao.SocietyDao;
 import com.cf.studentsociety.entity.Society;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import java.sql.SQLException;
@@ -40,4 +41,11 @@ public class SocietyDaoImpl extends BaseDao implements SocietyDao {
         return result;
     }
 
+    @Override
+    public Society queryByStudentNumber(String number) throws SQLException {
+        String sql = "select a.* from society a,student,member where studentNumber = ? and student.studentId = member.memberStudentId and member.member_societyId = a.society";
+        QueryRunner qr = new QueryRunner(getDataSource());
+        return qr.query(sql,new BeanHandler<Society>(Society.class), number);
+    }
 }
+

@@ -131,6 +131,7 @@
 //
 //}
 
+
 package com.cf.studentsociety.web;
 
 import com.cf.studentsociety.dao.SocietyDao;
@@ -154,6 +155,7 @@ import java.util.stream.Collectors;
 public class SocietyServlet extends RouteServlet {
     private SocietyDao societyDao = new SocietyDaoImpl();
     private StudentDao studentDao = new StudentDaoImpl();
+//    private SocietyDao societyDao = new SocietyDaoImpl();
 
     @Override
     protected Class<?> getMyClass() {
@@ -265,4 +267,21 @@ public class SocietyServlet extends RouteServlet {
 
         return responseMap;
     }
+
+
+    public Object addPage(HttpServletRequest req, HttpServletResponse res) throws
+            ServletException, IOException {
+        HttpSession session = req.getSession();
+        String number = (String) session.getAttribute("student");
+        Society society = null;
+        try {
+            society = societyDao.queryByStudentNumber(number);
+        }catch (SQLException throwables) {
+            throwables.printStackTrace();
+            handleException(throwables,req,res);
+        }
+        req.setAttribute("society",society);
+        return "member/addStudent";
+    }
+
 }

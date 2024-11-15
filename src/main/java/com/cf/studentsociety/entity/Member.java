@@ -10,6 +10,14 @@ public class Member {
     private Integer memberStatus;
     private String memberPosition;
     private String member_associationId;
+    private String member_societyId;
+    public String getMember_societyId() {
+        return member_societyId;
+    }
+
+    public void setMember_societyId(String member_societyId) {
+        this.member_societyId = member_societyId;
+    }
 
     public Integer getMemberId() {
         return memberId;

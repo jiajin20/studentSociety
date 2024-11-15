@@ -13,10 +13,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet(name = "student", urlPatterns = "/student/*")
 public class StudentServlet extends RouteServlet {
-
     private StudentDao studentDao = new StudentDaoImpl();
     @Override
     protected Class getMyClass() {
@@ -45,6 +45,22 @@ public class StudentServlet extends RouteServlet {
 
         }
         return "direct";
+    }
+
+    public String queryStudent(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+        String name = req.getParameter("name");
+        String number = req.getParameter("number");
+        List<Student> students = null;
+        try {
+            students = studentDao.queryStudent(name, number);
+            req.setAttribute("student", students);
+        }catch (SQLException throwables) {
+            throwables.printStackTrace();
+            req.setAttribute("exception", throwables);
+            return "error";
+        }
+        req.getRequestDispatcher("/member/addPage").forward(req,res);
+        return "null";
     }
 
 }
