@@ -71,6 +71,7 @@ public class ActivityServlet extends RouteServlet{
             activity.setActivity_intro(intro);
             activity.setActivity_start_time(start);
             activity.setActivity_end_time(end);
+
             try {
                 result = activityDao.addActivity(activity);
             } catch (SQLException throwables) {
@@ -106,7 +107,18 @@ public class ActivityServlet extends RouteServlet{
 
     public Object updateActivity(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        return null;
+        String idStr = req.getParameter("id");
+        String intro = req.getParameter("intro");
+        Integer id = Integer.valueOf(idStr);
+        Integer result = null;
+        try {
+            result = activityDao.updateIntro(id,intro);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            handleException(throwables,req,res);
+        }
+        return result;
+
     }
 
 }

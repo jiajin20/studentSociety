@@ -23,6 +23,13 @@ public class ActivityDaoImpl extends BaseDao implements ActivityDao {
         QueryRunner qr = new QueryRunner(getDataSource());
         return qr.query(sql, new BeanListHandler<Activity>(Activity.class),societyId);
     }
+    @Override
+    public Integer updateIntro(Integer id, String intro) throws SQLException {
+        String sql = "update activity set activity_intro = ? where activityId = ?";
+        QueryRunner qr = new QueryRunner(getDataSource());
+        return qr.update(sql,intro,id);
+    }
+
 
 }
 

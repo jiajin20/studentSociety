@@ -10,7 +10,7 @@
 <%@ include file="../common/up.jsp" %>
 <div class="panel">
     <div class="panel-heading">
-        <span class="panel-title">协会活动列表</span>
+        <span class="panel-title">${requestScope.society.societyId}协会举办活动</span>
     </div>
     <script>
         let element;
@@ -89,8 +89,25 @@
                 <th>开始时间</th>
                 <th>结束时间</th>
             </thead>
-            <tbody>
 
+            <tbody>
+            <c:forEach items="${activities}" var="activity" varStatus="status">
+                <tr data-id="${activity.activityId}">
+                    <td>${status.count}</td>
+                    <td>${activity.activity_name}</td>
+                    <td name="intro"onclick="changeValue(this)">
+                        ${activity.activity_intro}
+                    </td>
+                    <td>
+                        <fmt:formatDate value="${activity.activity_start_time}"
+                                        pattern="yyyy-MM-dd HH:mm:ss"/>
+        </td>
+        <td>
+        <fmt:formatDate value="${activity.activity_end_time}"
+                        pattern="yyyy-MM-dd HH:mm:ss"/>
+                    </td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>
