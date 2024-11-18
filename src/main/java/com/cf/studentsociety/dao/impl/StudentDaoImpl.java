@@ -8,7 +8,11 @@ import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
+
+
 
 
 public class StudentDaoImpl extends BaseDao implements StudentDao {
@@ -31,25 +35,33 @@ public class StudentDaoImpl extends BaseDao implements StudentDao {
         return qr.query(sql,new BeanHandler<Student>(Student.class),id);
     }
     @Override
-    public List<Student> queryStudent(String name, String number)throws SQLException {
+    public List<Student> queryStudent(String name, String number) throws SQLException {
         StringBuffer buffer = new StringBuffer("select * from student where 1 = 1");
         QueryRunner qr = new QueryRunner(getDataSource());
-        if (name!=null && number !=""){
-            buffer.append("and studentNumber like concat('%'?'%')");
-        }else if (number !=null && number !=""){
-            buffer.append("and studentNumber like concat('%'?'%')");
+
+        // 构建查询条件和参数
+        List<Object> params = new ArrayList<>();
+
+        if (name != null && !name.isEmpty()) {
+            buffer.append(" and studentName like ?");
+            params.add("%" + name + "%");
         }
 
-        List<Student>students = null;
-        if (name != null && name!="" &&(number == null || number == "")){
-            students = qr.query(buffer.toString(), new BeanListHandler<Student>(Student.class),name);
-        } else if (number != null && number!="" &&(name == null || name == "")) {
-            students = qr.query(buffer.toString(), new BeanListHandler<Student>(Student.class),number);
-        } else if (name != null && name!="" &&(number == null || number == "")) {
-            students = qr.query(buffer.toString(), new BeanListHandler<Student>(Student.class),name,number);
-        }else {
-            students = qr.query(buffer.toString(), new BeanListHandler<Student>(Student.class));
+        if (number != null && !number.isEmpty()) {
+            buffer.append(" and studentNumber like ?");
+            params.add("%" + number + "%");
         }
+
+        // 执行查询
+        List<Student> students = null;
+        if (params.isEmpty()) {
+            // 如果没有传入任何参数，查询所有学生
+            students = qr.query(buffer.toString(), new BeanListHandler<>(Student.class));
+        } else {
+            // 使用正确的参数执行查询
+            students = qr.query(buffer.toString(), new BeanListHandler<>(Student.class), params.toArray());
+        }
+
         return students;
     }
 

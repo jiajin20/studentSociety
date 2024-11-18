@@ -131,7 +131,6 @@
 //
 //}
 
-
 package com.cf.studentsociety.web;
 
 import com.cf.studentsociety.dao.SocietyDao;
@@ -269,19 +268,6 @@ public class SocietyServlet extends RouteServlet {
     }
 
 
-    public Object addPage(HttpServletRequest req, HttpServletResponse res) throws
-            ServletException, IOException {
-        HttpSession session = req.getSession();
-        String number = (String) session.getAttribute("student");
-        Society society = null;
-        try {
-            society = societyDao.queryByStudentNumber(number);
-        }catch (SQLException throwables) {
-            throwables.printStackTrace();
-            handleException(throwables,req,res);
-        }
-        req.setAttribute("society",society);
-        return "member/addStudent";
-    }
+
 
 }

@@ -17,6 +17,7 @@ import java.util.List;
 
 @WebServlet(name = "student", urlPatterns = "/student/*")
 public class StudentServlet extends RouteServlet {
+
     private StudentDao studentDao = new StudentDaoImpl();
     @Override
     protected Class getMyClass() {
@@ -28,39 +29,33 @@ public class StudentServlet extends RouteServlet {
         String password = req.getParameter("password");
         Student stu = null;
         try {
-            stu = studentDao.login(account, password);
+            stu = studentDao.login(account,password);
         } catch (SQLException throwables) {
-            handleException(throwables, req, res);
+            handleException(throwables,req,res);
         }
-        if (stu != null) {
+        if(stu != null){
             HttpSession session = req.getSession();
-            session.setAttribute("student", stu.getStudentNumber());
+            session.setAttribute("student",stu.getStudentNumber());
+//            res.sendRedirect("/studentSociety/main.jsp");
             res.sendRedirect("/studentSociety/society/mainIndex");
-        } else {
-//          req.getRequestDispatcher("/index.jsp").forward(req, res);
-//            res.sendRedirect("login.jsp?error=true");
-//            req.getRequestDispatcher("/index.jsp?message=account or password is wrong").forward(req,res);
-            req.setAttribute("message", "账号或密码错误，请重新输入。");
-            req.getRequestDispatcher("/index.jsp").forward(req, res);
-
+        }else{
+            req.getRequestDispatcher("/index.jsp?message=account or password is wrong").forward(req,res);
         }
         return "direct";
     }
-
-    public String queryStudent(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException{
+    public String queryStudent(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         String name = req.getParameter("name");
         String number = req.getParameter("number");
         List<Student> students = null;
         try {
             students = studentDao.queryStudent(name, number);
-            req.setAttribute("student", students);
-        }catch (SQLException throwables) {
+            req.setAttribute("students", students);
+        } catch (SQLException throwables) {
             throwables.printStackTrace();
             req.setAttribute("exception", throwables);
             return "error";
         }
-        req.getRequestDispatcher("/member/addPage").forward(req,res);
+        req.getRequestDispatcher("/member/addPage").forward(req, res);
         return "null";
     }
-
 }
