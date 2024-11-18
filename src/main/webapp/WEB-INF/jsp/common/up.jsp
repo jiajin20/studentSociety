@@ -74,10 +74,10 @@
                         </a>
                         <div id="memberSubPages" class="collapse ">
                             <ul class="nav">
-                                <li><a href="/member/members?status=1" class="">成员列表</a></li>
-                                <li><a href="/member/addPage" class="">添加成员</a></li>
+                                <li><a href="member/members?status=1" class="">成员列表</a></li>
+                                <li><a href="member/addPage" class="">添加成员</a></li>
 
-                                    <li><a href="/member/members?status=3" class="">退出申请</a></li>
+                                    <li><a href="member/members?status=3" class="">退出申请</a></li>
                             </ul>
                         </div>
                     </li>
