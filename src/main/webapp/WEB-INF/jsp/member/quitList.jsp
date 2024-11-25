@@ -42,24 +42,7 @@
             <th>是否同意</th>
             </thead>
             <tbody>
-            <%--            <c:forEach items="${member}" var="member">--%>
-            <%--                <tr data-id="${member.memberId}">--%>
-            <%--                    <td>${member.memberInfo.studentNumber}</td>--%>
-            <%--                    <td>${member.memberInfo.studentName}</td>--%>
-            <%--                    <td>${member.memberInfo.gender}</td>--%>
-            <%--                    <td>--%>
-            <%--                        <fmt:formatDate value="${member.joinDate}" pattern="yyy-MM-dd"/>--%>
-            <%--                    </td>--%>
-            <%--                    <td>--%>
-            <%--                        <button type="button" class="btn btn-danger"--%>
-            <%--                                onclick="deleteMember(this,2)">同意--%>
-            <%--                        </button>--%>
-            <%--                        <button type="button" class="btn btn-warning"--%>
-            <%--                                onclick="deleteMember(this,1)">拒绝--%>
-            <%--                        </button>--%>
-            <%--                    </td>--%>
-            <%--                </tr>--%>
-            <%--            </c:forEach>--%>
+
             <c:forEach items="${members}" var="member">
                 <tr data-id="${member.memberId}">
                     <td>${member.memberInfo.studentNumber}</td>
