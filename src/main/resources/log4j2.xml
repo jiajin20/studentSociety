@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Log4j2 配置文件 -->
+<Configuration xmlns="WARN">
+    <!-- 定义日志输出位置 -->
+    <Appenders>
+        <!-- 控制台输出 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!-- 定义日志输出格式 -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-level %logger{36} - %msg%n"/>
+        </Console>
+        <!-- 文件输出 -->
+        <File name="FileLogger" fileName="logs/application.log" append="false">
+            <!-- 定义日志输出格式 -->
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-level %logger{36} - %msg%n"/>
+        </File>
+    </Appenders>
+
+    <!-- 定义日志记录器 -->
+    <Loggers>
+        <!-- 根日志记录器，定义全局日志输出级别为 debug -->
+        <Root level="debug">
+            <!-- 关联控制台输出 -->
+            <AppenderRef ref="Console"/>
+            <!-- 关联文件输出 -->
+            <AppenderRef ref="FileLogger"/>
+        </Root>
+    </Loggers>
+</Configuration>

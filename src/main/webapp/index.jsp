@@ -8,7 +8,7 @@
             <base href="<%=basePath%>">
             <title>登录</title>
             <meta charset="utf-8">
-            <link rel="stylesheet" href="./assets/css/login.css">
+            <link rel="stylesheet" href="/assets/css/login.css">
 
         </head>
         <% String message=(String) request.getAttribute("message"); %>

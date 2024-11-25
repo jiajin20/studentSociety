@@ -42,14 +42,11 @@ public class EncodingFilter implements Filter {
                 }
                 return map;
             }
-
         };
         if ("get".equals(req.getMethod().toLowerCase())) {
             reque.getParameterMap();
             req = reque;
         }
         chain.doFilter(req, res);
-
-
     }
 }

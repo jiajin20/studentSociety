@@ -11,7 +11,7 @@
 <div class="clearfix"></div>
 <footer>
     <div class="container-fluid">
-        <p class="copyright">Copyright &copy; 2020.Company name All rights reserved.</p>
+        <p class="copyright">Copyright &copy; 2024.Company CrossFire All rights reserved.</p>
     </div>
 </footer>
 </div>
@@ -29,10 +29,7 @@
 <style>
     .copyrights{text-indent:-9999px;height:0;line-height:0;font-size:0;overflow:hidden;}
 </style>
-<div class="copyrights" id="links20210126">
-    Collect from <a href="http://www.cssmoban.com/"  title="网站模板">模板之家</a>
-    <a href="http://cooco.net.cn/" title="组卷网">组卷网</a>
-</div>
+
 <script src="assets/scripts/webUtil.js"></script>
 </body>
 </html>

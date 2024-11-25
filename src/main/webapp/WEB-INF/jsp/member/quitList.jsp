@@ -10,19 +10,19 @@
 <%@ include file="../common/up.jsp" %>
 <div class="panel">
     <div class="panel-heading">
-        <span class="panel-title">协会退出申请列表</span>
+        <span class="panel-title">${requestScope.society.society_name}协会退出申请列表</span>
     </div>
     <script>
-        function deleteMember(ele,status){
+        function deleteMember(ele, status) {
             let memberId = ele.parentNode.parentNode.dataset.id;
-            axios.post("/member/deleteMember",{
-                id:memberId,
-                status:status
-            }).then(data =>{
-                if(data.data == 1 && status == 2){
+            axios.post("/member/deleteMember", {
+                id: memberId,
+                status: status
+            }).then(data => {
+                if (data.data == 1 && status == 2) {
                     alert("删除成功")
                     ele.parentNode.parentNode.parentNode.removeChild(ele.parentNode.parentNode);
-                }else if (status == 1){
+                } else if (status == 1) {
                     alert("拒绝退出")
                     ele.parentNode.parentNode.parentNode.removeChild(ele.parentNode.parentNode);
                 }
@@ -42,7 +42,42 @@
             <th>是否同意</th>
             </thead>
             <tbody>
-            
+            <%--            <c:forEach items="${member}" var="member">--%>
+            <%--                <tr data-id="${member.memberId}">--%>
+            <%--                    <td>${member.memberInfo.studentNumber}</td>--%>
+            <%--                    <td>${member.memberInfo.studentName}</td>--%>
+            <%--                    <td>${member.memberInfo.gender}</td>--%>
+            <%--                    <td>--%>
+            <%--                        <fmt:formatDate value="${member.joinDate}" pattern="yyy-MM-dd"/>--%>
+            <%--                    </td>--%>
+            <%--                    <td>--%>
+            <%--                        <button type="button" class="btn btn-danger"--%>
+            <%--                                onclick="deleteMember(this,2)">同意--%>
+            <%--                        </button>--%>
+            <%--                        <button type="button" class="btn btn-warning"--%>
+            <%--                                onclick="deleteMember(this,1)">拒绝--%>
+            <%--                        </button>--%>
+            <%--                    </td>--%>
+            <%--                </tr>--%>
+            <%--            </c:forEach>--%>
+            <c:forEach items="${members}" var="member">
+                <tr data-id="${member.memberId}">
+                    <td>${member.memberInfo.studentNumber}</td>
+                    <td>${member.memberInfo.studentName}</td>
+                    <td>${member.memberInfo.gender}</td>
+                    <td>
+                        <fmt:formatDate value="${member.joinDate}" pattern="yyyy-MM-dd"/>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger"
+                                onclick="deleteMember(this,2)">同意
+                        </button>
+                        <button type="button" class="btn btn-warning"
+                                onclick="deleteMember(this,1)">拒绝
+                        </button>
+                    </td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
     </div>

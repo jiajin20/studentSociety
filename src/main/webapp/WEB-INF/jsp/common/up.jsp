@@ -1,13 +1,6 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: wolfishplk
-  Date: 2023/7/14
-  Time: 9:43
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <% String path = request.getContextPath();
-    String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
 %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -31,15 +24,16 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
     <!-- ICONS -->
     <link rel="apple-touch-icon" sizes="76x76" href="/assets/img/apple-icon.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/favicon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/img/logo.png">
 </head>
+
 <body>
 <!-- WRAPPER -->
 <div id="wrapper">
     <!-- NAVBAR -->
-    <nav class="navbar navbar-default navbar-fixed-top">
-        <div class="brand">
-            <a href="index.html"><img src="/assets/img/logo-dark.png" alt="Klorofil Logo" class="img-responsive logo"></a>
+    <nav class="navbar navbar-default navbar-fixed-top" style="height: 80px">
+        <div class="brand" style="height: 32px">
+            <a href="index.html"><img src="/assets/img/logo.png" style="width: 62px;height: 62px;position: relative;top: -15px" alt=" " class="img-responsive logo"></a>
         </div>
         <div class="container-fluid">
             <div class="navbar-btn">
@@ -61,32 +55,70 @@
         </div>
     </nav>
     <!-- END NAVBAR -->
+
     <!-- LEFT SIDEBAR -->
     <div id="sidebar-nav" class="sidebar">
         <div class="sidebar-scroll">
             <nav>
                 <ul class="nav">
-                    <li><a href="mainIndex" class="active"><i class="lnr lnr-home"></i> <span>协会管理</span></a></li>
                     <li>
-                        <a href="#memberSubPages" data-toggle="collapse" class="collapsed">
+                        <a href="/studentSociety/society/mainIndex"
+                           class="<%= request.getRequestURI().endsWith("/society/mainIndex") ? "active" : "" %>">
+                            <i class="lnr lnr-home"></i>
+                            <span>协会管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#memberSubPages" data-toggle="collapse"
+                           class="<%= request.getRequestURI().contains("/member") ? "active" : "" %>">
                             <i class="lnr lnr-user"></i>
                             <span>成员管理</span>
                         </a>
-                        <div id="memberSubPages" class="collapse ">
+                        <div id="memberSubPages" class="collapse">
                             <ul class="nav">
-                                <li><a href="member/members?status=1" class="">成员列表</a></li>
-                                <li><a href="member/addPage" class="">添加成员</a></li>
-
-                                    <li><a href="member/members?status=3" class="">退出申请</a></li>
+                                <li>
+                                    <a href="member/members?status=1"
+                                       class="<%= request.getRequestURI().endsWith("/member/members") ? "active" : "" %>">
+                                        成员列表
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="member/addPage"
+                                       class="<%= request.getRequestURI().endsWith("/member/addPage") ? "active" : "" %>">
+                                        添加成员
+                                    </a>
+                                </li>
+                                <c:if test="${sessionScope.position.memberPosition == 1 || sessionScope.position.memberPosition == 2}">
+                                    <li>
+                                        <a href="member/members?status=3"
+                                           class="<%= request.getRequestURI().endsWith("/member/members?status=3") ? "active" : "" %>">
+                                            退出申请
+                                        </a>
+                                    </li>
+                                </c:if>
                             </ul>
                         </div>
                     </li>
                     <li>
-                        <a href="#activitySubPages" data-toggle="collapse" class="collapsed"><i class="lnr lnr-map"></i> <span>活动管理</span></a>
-                        <div id="activitySubPages" class="collapse ">
+                        <a href="#activitySubPages" data-toggle="collapse"
+                           class="<%= request.getRequestURI().contains("/activity") ? "active" : "" %>">
+                            <i class="lnr lnr-map"></i>
+                            <span>活动管理</span>
+                        </a>
+                        <div id="activitySubPages" class="collapse">
                             <ul class="nav">
-                                <li><a href="activity/addPage" class="">活动申请</a></li>
-                                <li><a href="activity/activityList" class="">活动列表</a></li>
+                                <li>
+                                    <a href="activity/addPage"
+                                       class="<%= request.getRequestURI().endsWith("/activity/addPage") ? "active" : "" %>">
+                                        活动申请
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="activity/activityList"
+                                       class="<%= request.getRequestURI().endsWith("/activity/activityList") ? "active" : "" %>">
+                                        活动列表
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </li>
@@ -95,5 +127,30 @@
         </div>
     </div>
     <!-- END LEFT SIDEBAR -->
-    <!-- MAIN -->
+
+    <!-- MAIN CONTENT -->
     <div class="main">
+        <!-- Main content goes here -->
+
+<!-- WRAPPER END -->
+
+<!-- JAVASCRIPT -->
+<script src="/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+<script>
+    // Dynamic active class setting on page load (for JavaScript-based control)
+    $(document).ready(function() {
+        var currentUrl = window.location.pathname;
+
+        // Highlight the current page in sidebar dynamically
+        $("#sidebar-nav .nav li a").each(function() {
+            var linkHref = $(this).attr("href");
+            if (currentUrl.indexOf(linkHref) !== -1) {
+                $(this).addClass("active");
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

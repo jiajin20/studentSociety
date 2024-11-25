@@ -1,7 +1,10 @@
 package com.cf.studentsociety.web;
 
+import com.cf.studentsociety.dao.MemberDao;
 import com.cf.studentsociety.dao.StudentDao;
+import com.cf.studentsociety.dao.impl.MemberDaoImpl;
 import com.cf.studentsociety.dao.impl.StudentDaoImpl;
+import com.cf.studentsociety.entity.Member;
 import com.cf.studentsociety.entity.Student;
 
 import javax.servlet.ServletException;
@@ -19,6 +22,7 @@ import java.util.List;
 public class StudentServlet extends RouteServlet {
 
     private StudentDao studentDao = new StudentDaoImpl();
+    private MemberDao memberDao = new MemberDaoImpl();
     @Override
     protected Class getMyClass() {
         return this.getClass();
@@ -28,18 +32,22 @@ public class StudentServlet extends RouteServlet {
         String account = req.getParameter("account");
         String password = req.getParameter("password");
         Student stu = null;
+        Member member = null;
         try {
-            stu = studentDao.login(account,password);
-        } catch (SQLException throwables) {
+            stu = studentDao.login(account, password);
+
+            if (stu != null) {
+                member = memberDao.queryByNumber(stu.getStudentNumber());
+                System.out.println(member);
+                HttpSession session = req.getSession();
+                session.setAttribute("student", stu.getStudentNumber());
+                session.setAttribute("position", member );
+                res.sendRedirect("/studentSociety/society/mainIndex");
+            } else {
+                req.getRequestDispatcher("/index.jsp?message=account or password is wrong").forward(req, res);
+            }
+        }catch (SQLException throwables) {
             handleException(throwables,req,res);
-        }
-        if(stu != null){
-            HttpSession session = req.getSession();
-            session.setAttribute("student",stu.getStudentNumber());
-//            res.sendRedirect("/studentSociety/main.jsp");
-            res.sendRedirect("/studentSociety/society/mainIndex");
-        }else{
-            req.getRequestDispatcher("/index.jsp?message=account or password is wrong").forward(req,res);
         }
         return "direct";
     }

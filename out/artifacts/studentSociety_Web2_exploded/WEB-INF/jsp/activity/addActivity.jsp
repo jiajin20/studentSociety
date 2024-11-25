@@ -7,7 +7,7 @@
             <span class="panel-title">${sessionScope.society.society_name}协会举办活动</span>
         </div>
         <div class="panel-body">
-            <form action="activity/addActivity" method="post">
+            <form action="/studentSociety/activity/addActivity" method="post">
                 活动名：<input type="text" class="form-control" name="name" placeholder="请输入活动名称" required><br>
                 活动简介：<input type="text" class="form-control" name="intro" placeholder="请输入活动简介" required><br>
                 开始时间：<input type="datetime-local" class="form-control" name="start" required/>

@@ -12,7 +12,7 @@
 <%@ include file="../common/up.jsp" %>
 <div class="panel">
     <div class="panel-heading">
-        <span class="panel-title">协会成员列表</span>
+        <span class="panel-title">${society.society_name}协会成员列表</span>
         <button type="button" class="btn btn-danger"
                 style="padding:4px 10px;background-color: crimson;"
                 onclick="clearGraduated()">
@@ -21,7 +21,7 @@
     </div>
     <script>
         function clearGraduated(){
-            let assId = "";
+            let assId = "${requestScope.society.societyId}";
             data = {assId:assId};
             axios.post("/member/deleteGraduated",data)
                 .then(data =>{
@@ -64,25 +64,33 @@
                 <th>退出</th>
             </thead>
             <tbody>
-            <c:forEach items="$activities}" var="activity" varStatus="status">
-                <tr data-id="${activity.activityId}">
-                    <td>${status.count}</td>
-                    <td>${activity.activity_name}</td>
-                    <td name="intro" onclick="changeValue(this)">
-                        ${activity.activity_intro}
+
+            <c:forEach items="${members}" var="member">
+                <tr data-id="${member.memberId}">
+                    <td>${member.memberInfo.studentNumber}</td>
+                    <td>${member.memberInfo.studentName}</td>
+                    <td>${member.memberInfo.gender}</td>
+                    <td>
+                        <fmt:formatDate value="${member.joinDate}" pattern="yyyy-MM-dd"/>
                     </td>
                     <td>
-                        <fmt:formatDate value = "${activity.activity_start_time}"
-                                        pattern="yyyy-MM-dd HH:mm:ss"/>
+                        ${member.memberInfo.graduated == 1 ? "未毕业" : "已毕业"}
                     </td>
                     <td>
-                        <fmt:formatDate value="${activity.activity_end_time}"
-                                        pattern="yyyy-MM-dd HH:mm:ss"/>
+                        <c:if test="${sessionScope.position.memberPosition == 1 || sessionScope.position.memberPosition == 2}">
+                            <button type="button" class="btn btn-danger" onclick="deleteMember(this,2)">
+                                强制退出
+                            </button>
+                        </c:if>
+                        <c:if test="${member.memberInfo.studentNumber == student}">
+                            <button type="button" class="btn btn-danger" onclick="deleteMember(this,3)">
+                                退出
+                            </button>
+                        </c:if>
                     </td>
                 </tr>
             </c:forEach>
             </tbody>
-
         </table>
     </div>
 </div>
