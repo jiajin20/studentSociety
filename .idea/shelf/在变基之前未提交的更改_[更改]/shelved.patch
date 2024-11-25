@@ -1,0 +1,448 @@
+Index: src/main/java/com/cf/studentsociety/web/StudentServlet.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.cf.studentsociety.web;\r\n\r\nimport com.cf.studentsociety.dao.StudentDao;\r\nimport com.cf.studentsociety.dao.impl.StudentDaoImpl;\r\nimport com.cf.studentsociety.entity.Member;\r\nimport com.cf.studentsociety.entity.Student;\r\n\r\nimport javax.servlet.ServletException;\r\nimport javax.servlet.annotation.WebServlet;\r\nimport javax.servlet.http.HttpServletRequest;\r\nimport javax.servlet.http.HttpServletResponse;\r\nimport javax.servlet.http.HttpSession;\r\nimport java.io.IOException;\r\nimport java.sql.SQLException;\r\nimport java.util.List;\r\n\r\n@WebServlet(name = \"student\", urlPatterns = \"/student/*\")\r\npublic class StudentServlet extends RouteServlet {\r\n\r\n    private StudentDao studentDao = new StudentDaoImpl();\r\n\r\n    @Override\r\n    protected Class getMyClass() {\r\n        return this.getClass();\r\n    }\r\n    public String login(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {\r\n        req.setCharacterEncoding(\"UTF-8\");\r\n        String account = req.getParameter(\"account\");\r\n        String password = req.getParameter(\"password\");\r\n        Student stu = null;\r\n\r\n        try {\r\n            stu = studentDao.login(account, password);\r\n\r\n            if (stu != null) {\r\n\r\n\r\n                HttpSession session = req.getSession();\r\n                session.setAttribute(\"student\", stu.getStudentNumber());\r\n\r\n                res.sendRedirect(\"/studentSociety/society/mainIndex\");\r\n            } else {\r\n                req.getRequestDispatcher(\"/index.jsp?message=account or password is wrong\").forward(req, res);\r\n            }\r\n        }catch (SQLException throwables) {\r\n            handleException(throwables,req,res);\r\n        }\r\n        return \"direct\";\r\n    }\r\n    public String queryStudent(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {\r\n        String name = req.getParameter(\"name\");\r\n        String number = req.getParameter(\"number\");\r\n        List<Student> students = null;\r\n        try {\r\n            students = studentDao.queryStudent(name, number);\r\n            req.setAttribute(\"students\", students);\r\n        } catch (SQLException throwables) {\r\n            throwables.printStackTrace();\r\n            req.setAttribute(\"exception\", throwables);\r\n            return \"error\";\r\n        }\r\n        req.getRequestDispatcher(\"/member/addPage\").forward(req, res);\r\n        return \"null\";\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/cf/studentsociety/web/StudentServlet.java b/src/main/java/com/cf/studentsociety/web/StudentServlet.java
+--- a/src/main/java/com/cf/studentsociety/web/StudentServlet.java	(revision 123959dec99ac972ebdcd1ec8f0d2829aa2487e1)
++++ b/src/main/java/com/cf/studentsociety/web/StudentServlet.java	(date 1732518190336)
+@@ -1,16 +1,20 @@
+ package com.cf.studentsociety.web;
+ 
++import com.cf.studentsociety.dao.MemberDao;
+ import com.cf.studentsociety.dao.StudentDao;
++import com.cf.studentsociety.dao.impl.MemberDaoImpl;
+ import com.cf.studentsociety.dao.impl.StudentDaoImpl;
+ import com.cf.studentsociety.entity.Member;
+ import com.cf.studentsociety.entity.Student;
+ 
+ import javax.servlet.ServletException;
+ import javax.servlet.annotation.WebServlet;
++import javax.servlet.http.HttpServlet;
+ import javax.servlet.http.HttpServletRequest;
+ import javax.servlet.http.HttpServletResponse;
+ import javax.servlet.http.HttpSession;
+ import java.io.IOException;
++import java.io.PrintWriter;
+ import java.sql.SQLException;
+ import java.util.List;
+ 
+@@ -18,7 +22,7 @@
+ public class StudentServlet extends RouteServlet {
+ 
+     private StudentDao studentDao = new StudentDaoImpl();
+-
++    private MemberDao memberDao = new MemberDaoImpl();
+     @Override
+     protected Class getMyClass() {
+         return this.getClass();
+@@ -28,16 +32,16 @@
+         String account = req.getParameter("account");
+         String password = req.getParameter("password");
+         Student stu = null;
+-
++        Member member = null;
+         try {
+             stu = studentDao.login(account, password);
+ 
+             if (stu != null) {
+-
+-
++                member = memberDao.queryByNumber(stu.getStudentNumber());
++                System.out.println(member);
+                 HttpSession session = req.getSession();
+                 session.setAttribute("student", stu.getStudentNumber());
+-
++                session.setAttribute("position", member );
+                 res.sendRedirect("/studentSociety/society/mainIndex");
+             } else {
+                 req.getRequestDispatcher("/index.jsp?message=account or password is wrong").forward(req, res);
+Index: src/main/webapp/WEB-INF/jsp/member/quitList.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/jsp/member/quitList.jsp b/src/main/webapp/WEB-INF/jsp/member/quitList.jsp
+new file mode 100644
+--- /dev/null	(date 1732518190342)
++++ b/src/main/webapp/WEB-INF/jsp/member/quitList.jsp	(date 1732518190342)
+@@ -0,0 +1,68 @@
++<%--
++  Created by IntelliJ IDEA.
++  User: wolfishplk
++  Date: 2023/7/19
++  Time: 9:22
++  To change this template use File | Settings | File Templates.
++--%>
++<%@ page contentType="text/html;charset=UTF-8" language="java" %>
++
++<%@ include file="../common/up.jsp" %>
++<div class="panel">
++    <div class="panel-heading">
++        <span class="panel-title">${requestScope.society.society_name}协会退出申请列表</span>
++    </div>
++    <script>
++        function deleteMember(ele, status) {
++            let memberId = ele.parentNode.parentNode.dataset.id;
++            axios.post("/member/deleteMember", {
++                id: memberId,
++                status: status
++            }).then(data => {
++                if (data.data == 1 && status == 2) {
++                    alert("删除成功")
++                    ele.parentNode.parentNode.parentNode.removeChild(ele.parentNode.parentNode);
++                } else if (status == 1) {
++                    alert("拒绝退出")
++                    ele.parentNode.parentNode.parentNode.removeChild(ele.parentNode.parentNode);
++                }
++            }).catch(e => {
++                alert(e)
++            });
++
++        }
++    </script>
++    <div class="panel-body">
++        <table class="table">
++            <thead>
++            <th>学号</th>
++            <th>姓名</th>
++            <th>性别</th>
++            <th>加入时间</th>
++            <th>是否同意</th>
++            </thead>
++            <tbody>
++
++            <c:forEach items="${members}" var="member">
++                <tr data-id="${member.memberId}">
++                    <td>${member.memberInfo.studentNumber}</td>
++                    <td>${member.memberInfo.studentName}</td>
++                    <td>${member.memberInfo.gender}</td>
++                    <td>
++                        <fmt:formatDate value="${member.joinDate}" pattern="yyyy-MM-dd"/>
++                    </td>
++                    <td>
++                        <button type="button" class="btn btn-danger"
++                                onclick="deleteMember(this,2)">同意
++                        </button>
++                        <button type="button" class="btn btn-warning"
++                                onclick="deleteMember(this,1)">拒绝
++                        </button>
++                    </td>
++                </tr>
++            </c:forEach>
++            </tbody>
++        </table>
++    </div>
++</div>
++<%@include file="../common/down.jsp" %>
+\ No newline at end of file
+Index: src/main/webapp/WEB-INF/jsp/member/memberList.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/jsp/member/memberList.jsp b/src/main/webapp/WEB-INF/jsp/member/memberList.jsp
+new file mode 100644
+--- /dev/null	(date 1732518125503)
++++ b/src/main/webapp/WEB-INF/jsp/member/memberList.jsp	(date 1732518125503)
+@@ -0,0 +1,97 @@
++<%--
++  Created by IntelliJ IDEA.
++  User: wolfishplk
++  Date: 2023/7/18
++  Time: 10:27
++  To change this template use File | Settings | File Templates.
++--%>
++<%@ page contentType="text/html;charset=UTF-8" language="java" %>
++<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
++<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
++
++<%@ include file="../common/up.jsp" %>
++<div class="panel">
++    <div class="panel-heading">
++        <span class="panel-title">${society.society_name}协会成员列表</span>
++        <button type="button" class="btn btn-danger"
++                style="padding:4px 10px;background-color: crimson;"
++                onclick="clearGraduated()">
++            <i class="fa fa-trash-o"></i>清除毕业生
++        </button>
++    </div>
++    <script>
++        function clearGraduated(){
++            let assId = "${requestScope.society.societyId}";
++            data = {assId:assId};
++            axios.post("/member/deleteGraduated",data)
++                .then(data =>{
++                    if(!isNaN(data.data)){
++                        alert("删除成功");
++                        location.reload();
++                    }else{
++                        alert("没有毕业生");
++                    }
++                })
++                .catch(e => {
++                    alert(e)
++                });
++        }
++
++        function deleteMember(ele,status){
++            let memberId = ele.parentNode.parentNode.dataset.id;
++            axios.post("/member/deleteMember",{
++                id:memberId,
++                status:status
++            }).then(data =>{
++                if(data.data == 1){
++                    alert("删除成功")
++                    ele.parentNode.parentNode.parentNode.removeChild(ele.parentNode.parentNode);
++                }
++            }).catch(e => {
++                alert(e)
++            });
++
++        }
++    </script>
++    <div class="panel-body">
++        <table class="table">
++            <thead>
++                <th>学号</th>
++                <th>姓名</th>
++                <th>性别</th>
++                <th>加入时间</th>
++                <th>是否毕业</th>
++                <th>退出</th>
++            </thead>
++            <tbody>
++
++            <c:forEach items="${members}" var="member">
++                <tr data-id="${member.memberId}">
++                    <td>${member.memberInfo.studentNumber}</td>
++                    <td>${member.memberInfo.studentName}</td>
++                    <td>${member.memberInfo.gender}</td>
++                    <td>
++                        <fmt:formatDate value="${member.joinDate}" pattern="yyyy-MM-dd"/>
++                    </td>
++                    <td>
++                        ${member.memberInfo.graduated == 1 ? "未毕业" : "已毕业"}
++                    </td>
++                    <td>
++                        <c:if test="${sessionScope.position.memberPosition == 1 || sessionScope.position.memberPosition == 2}">
++                            <button type="button" class="btn btn-danger" onclick="deleteMember(this,2)">
++                                强制退出
++                            </button>
++                        </c:if>
++                        <c:if test="${member.memberInfo.studentNumber == student}">
++                            <button type="button" class="btn btn-danger" onclick="deleteMember(this,3)">
++                                退出
++                            </button>
++                        </c:if>
++                    </td>
++                </tr>
++            </c:forEach>
++            </tbody>
++        </table>
++    </div>
++</div>
++<%@include file="../common/down.jsp" %>
+Index: src/main/webapp/WEB-INF/jsp/member/addStudent.jsp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/webapp/WEB-INF/jsp/member/addStudent.jsp b/src/main/webapp/WEB-INF/jsp/member/addStudent.jsp
+new file mode 100644
+--- /dev/null	(date 1732518125501)
++++ b/src/main/webapp/WEB-INF/jsp/member/addStudent.jsp	(date 1732518125501)
+@@ -0,0 +1,90 @@
++<%@ page contentType="text/html;charset=UTF-8" language="java" %>
++<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
++<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
++<%@ include file="../common/up.jsp" %>
++
++<div class="panel">
++    <div class="panel-heading">
++        <span class="panel-title">${society.society_name}协会添加成员</span>
++    </div>
++    <div class="panel-body">
++        <form action="student/queryStudent" method="post">
++            <input type="hidden" name="societyId" value="${requestScope.society.societyId}"> <!-- 假设这里传递协会ID -->
++            姓名：<input type="text" class="form-control" name="name" placeholder="请输入姓名"><br>
++            学号：<input type="number" class="form-control" name="number" placeholder="请输入学号"><br>
++            <input type="submit" class="btn btn-success" value="搜索"/>
++        </form>
++
++        <table class="table" data-assid="${requestScope.society.societyId}">
++            <thead>
++            <tr>
++                <th>学号</th>
++                <th>姓名</th>
++                <th>性别</th>
++                <th>生日</th>
++                <th>毕业与否</th>
++                <th>操作</th>
++            </tr>
++            </thead>
++            <tbody>
++            <c:if test="${not empty requestScope.students}">
++                <c:forEach items="${requestScope.students}" var="student">
++                    <tr data-stuid="${student.studentId}">
++                        <td>${student.studentNumber}</td>
++                        <td>${student.studentName}</td>
++                        <td>${student.gender}</td>
++                        <td>
++                            <fmt:formatDate type="date" value="${student.birthday}" pattern="yyyy-MM-dd"/>
++                        </td>
++                        <td>
++                                ${student.graduated == 1 ? "在校" : "毕业"}
++                        </td>
++                        <td>
++                            <button class="btn btn-primary" onclick="addStudent(this)">招收</button>
++                        </td>
++                    </tr>
++                </c:forEach>
++            </c:if>
++            </tbody>
++        </table>
++
++    </div>
++</div>
++
++
++
++<script>
++    function addStudent(ele) {
++        let stuId = ele.closest('tr').dataset.stuid; // 从最近的 tr 中获取 data-stuid
++        let assId = ele.closest('table').dataset.assid; // 从 table 中获取 data-assid
++
++        if (!stuId || !assId) {
++            alert("无法获取学生 ID 或协会 ID，请检查页面结构！");
++            return;
++        }
++
++        let data = {
++            stuId: stuId,
++            assId: assId
++        };
++
++        console.log("stuId:", stuId);
++        console.log("assId:", assId);
++
++        axios.post("/member/addMember", axios.transformRequest(data))
++            .then((number) => {
++                if (number.data == 1) {
++                    alert("添加成功");
++                    ele.closest('tr').remove(); // 删除当前行
++                } else {
++                    alert(number.data.message);
++                }
++            })
++            .catch((e) => {
++                alert("请求失败：" + e);
++            });
++    }
++
++</script>
++
++<%@ include file="../common/down.jsp" %>
+\ No newline at end of file
+Index: src/main/java/com/cf/studentsociety/dao/impl/MemberDaoImpl.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/cf/studentsociety/dao/impl/MemberDaoImpl.java b/src/main/java/com/cf/studentsociety/dao/impl/MemberDaoImpl.java
+new file mode 100644
+--- /dev/null	(date 1732518140826)
++++ b/src/main/java/com/cf/studentsociety/dao/impl/MemberDaoImpl.java	(date 1732518140826)
+@@ -0,0 +1,62 @@
++package com.cf.studentsociety.dao.impl;
++
++import com.cf.studentsociety.dao.BaseDao;
++import com.cf.studentsociety.dao.MemberDao;
++
++import com.cf.studentsociety.entity.Member;
++import com.sun.org.apache.xalan.internal.xsltc.dom.SimpleResultTreeImpl;
++import org.apache.commons.dbutils.QueryRunner;
++import org.apache.commons.dbutils.handlers.BeanHandler;
++import org.apache.commons.dbutils.handlers.BeanListHandler;
++import org.apache.commons.dbutils.handlers.ScalarHandler;
++
++import java.sql.SQLException;
++import java.util.List;
++public class MemberDaoImpl extends BaseDao implements MemberDao {
++    private Object id;
++
++    @Override
++    public Integer addMember(Member member) throws SQLException {
++        String sql = "insert into member (memberStudentId,joinDate,member_societyId) value (?,?,?)";
++        QueryRunner qr = new QueryRunner(getDataSource());
++        return qr.update(sql,member.getMemberStudentId(),member.getJoinDate(),member.getMember_societyId());
++    }
++    @Override
++    public Integer isMemberIn(Member member) throws SQLException {
++        String sql = "select count(1) from member where member_societyId = ? and memberStudentId = ?";
++        QueryRunner qr = new QueryRunner(getDataSource());
++        return qr.query(sql, new ScalarHandler<Long>(), member.getMember_societyId(), member.getMemberStudentId()).intValue();
++    }
++    @Override
++    public List<Member> queryAllMember(Integer status,Integer societyId) throws SQLException {
++        String sql = "select * from member where memberStatus = ? and member_societyId = ?";
++        QueryRunner qr = new QueryRunner(getDataSource());
++        return qr.query(sql,new BeanListHandler<Member>(Member.class),status,societyId);
++    }
++    @Override
++    public Integer deleteGraduated(Integer assId) throws SQLException {
++        String sql = "update member,student set member.memberStatus = 2 where member.member_societyId = ? and member.memberStudentId = student.studentId and student.graduated = 2";
++        QueryRunner qr = new QueryRunner(getDataSource());
++        return qr.update(sql, assId);
++    }
++
++    @Override
++    public Integer deleteMember(Integer id ,Integer status) throws SQLException {
++        String sql = "update member set member.memberStatus = ? where memberId = ?";
++        QueryRunner qr = new QueryRunner(getDataSource());
++        return qr.update(sql,status,id);
++    }
++
++    @Override
++    public Member queryByNumber(String number) throws SQLException {
++        // 正确的SQL语句，使用INNER JOIN来连接两个表，并且使用正确的字段引用方式
++        String sql = "SELECT m.* FROM member m INNER JOIN student s ON m.memberStudentId = s.studentId WHERE s.studentNumber = ?";
++
++        // 使用QueryRunner对象执行查询
++        QueryRunner qr = new QueryRunner(getDataSource());
++
++        // 返回查询结果，BeanHandler将结果集转换为Member对象
++        return qr.query(sql, new BeanHandler<Member>(Member.class), number);
++    }
++
++}
+\ No newline at end of file
+Index: src/main/java/com/cf/studentsociety/dao/MemberDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/cf/studentsociety/dao/MemberDao.java b/src/main/java/com/cf/studentsociety/dao/MemberDao.java
+new file mode 100644
+--- /dev/null	(date 1732518139824)
++++ b/src/main/java/com/cf/studentsociety/dao/MemberDao.java	(date 1732518139824)
+@@ -0,0 +1,17 @@
++package com.cf.studentsociety.dao;
++
++import com.cf.studentsociety.entity.Member;
++
++import java.sql.SQLException;
++import java.util.List;
++
++
++public interface MemberDao {
++    Integer addMember(Member member) throws SQLException;
++    Integer isMemberIn(Member member) throws SQLException;
++    List<Member> queryAllMember(Integer status,Integer societyId) throws SQLException;
++    Integer deleteGraduated(Integer assId) throws SQLException;
++    Integer deleteMember(Integer id, Integer status) throws SQLException;
++    Member queryByNumber(String number) throws SQLException;
++
++}
