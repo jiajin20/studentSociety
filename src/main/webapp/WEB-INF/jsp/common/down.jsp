@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 </div>
 <!-- END MAIN -->
-<div class="clearfix"></div>
+<div class="clearfix"></div>`
 <footer>
     <div class="container-fluid">
         <p class="copyright">Copyright &copy; 2024.Company CrossFire All rights reserved.</p>
