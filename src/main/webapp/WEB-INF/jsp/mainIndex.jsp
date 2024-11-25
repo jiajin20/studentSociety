@@ -287,7 +287,7 @@
             }
 
             function showForm(){
-                document.querySelector(".newsociety").style.display = "block";
+                document.querySelector(".newSociety").style.display = "block";
             }
             function submitForm(){
                 let form = document.querySelector(".newSociety form");
